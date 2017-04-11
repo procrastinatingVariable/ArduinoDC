@@ -3,7 +3,7 @@
 Controler::Controler() {
 	leftButton = BUTTON_RELEASED;
 	rightButton = BUTTON_RELEASED;
-	upButton = BUTTON_RELEASED;
+  upButton = BUTTON_RELEASED;
 	downButton = BUTTON_RELEASED;
 }
 
@@ -40,16 +40,12 @@ bool Controler::getDownState() {
 }
 
 void Controler::readButtons() {
-	static unsigned long int timerStart = 0;
-
-	if (millis() - timerStart > readDisableTime) {
-
 		bool leftReadValue = readButtonState(leftButtonPin);
 		bool rightReadValue = readButtonState(rightButtonPin);
 		bool upReadValue = readButtonState(upButtonPin);
 		bool downReadValue = readButtonState(downButtonPin);
 
-		//delay(15);
+		delay(15);
 		
 		if (validate(leftReadValue, leftButtonPin)) {
 			leftButton = leftReadValue;
@@ -66,10 +62,6 @@ void Controler::readButtons() {
 		if (validate(downReadValue, downButtonPin)) {
 			downButton = downReadValue;
 		}
-
-		timerStart = millis();
-
-	}
 }
 
 
