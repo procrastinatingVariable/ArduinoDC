@@ -8,6 +8,8 @@ byte ScreenBuffer::boolArrayToByte (bool source[8]) {
     targetBit = 7 - i;
     bitWrite(value, targetBit, source[targetBit]);
   }
+
+  return value;
 }
 
 
@@ -36,7 +38,7 @@ void ScreenBuffer::loadBuffer (byte source[BUFFER_SIZE]) {
 }
 
 void ScreenBuffer::writeToBuffer(int row, int column, bool value) {
-  if (row > 0 && row < 8 && column > 0 && column < 8) {
+  if (row >= 0 && row <= 7 && column >= 0 && column <= 7) {
     byte targetRow = buffer[row];
     int targetColumnNumber = 7 - column;
     bitWrite(targetRow, targetColumnNumber, value);

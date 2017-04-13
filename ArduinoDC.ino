@@ -3,6 +3,7 @@
 #include "Controler.h"
 #include "Player.h"
 #include "ScreenBuffer.h"
+#include "Room.h"
 
 #define CLOCK_PIN 6
 #define LOAD_PIN 8
@@ -32,18 +33,17 @@ void setup() {
 
 int currentScreenNumber = 0;
 void loop() {
-  lc.clearDisplay(0);
   c.readButtons();
 
-  Serial.print("Absolute : ");
-  Serial.print(p.getRowAbsolute());
-  Serial.print(" ");
-  Serial.println(p.getColumnAbsolute());
-  Serial.print("Relative : ");
-  Serial.print(p.getRowRelative());
-  Serial.print(" ");
-  Serial.println(p.getColumnRelative());
-  Serial.println("...........................");
+//  Serial.print("Absolute : ");
+//  Serial.print(p.getRowAbsolute());
+//  Serial.print(" ");
+//  Serial.println(p.getColumnAbsolute());
+//  Serial.print("Relative : ");
+//  Serial.print(p.getRowRelative());
+//  Serial.print(" ");
+//  Serial.println(p.getColumnRelative());
+//  Serial.println("...........................");
 
   if (c.getLeftState() == Controler::BUTTON_PRESSED) {
     p.moveLeft();
@@ -58,7 +58,8 @@ void loop() {
   displayPlayer();
   b.drawBuffer(lc, 0);
 
-  delay(150);
+
+  delay(250);
 }
 
 void getRoom() {

@@ -23,10 +23,11 @@ class Player{
     void setColumnAbsolute(int column);
 
     // set position in current room
-		void setRowRelative(int row);
+    void setRowRelative(int row);
 		void setColumnRelative(int column);
 
 
+   
 
     // get position in dungeon
     int getRowAbsolute();
