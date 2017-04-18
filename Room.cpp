@@ -11,7 +11,7 @@ byte Room::boolArrayToByte (bool source[8]) {
   int targetBit;
   for (int i = 0; i < 8; i++) {
     targetBit = 7 - i;
-    bitWrite(value, targetBit, source[targetBit]);
+    bitWrite(value, targetBit, source[i]);
   }
 
   return value;

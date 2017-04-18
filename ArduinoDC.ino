@@ -15,8 +15,8 @@
 #define UP_BUTTON_PIN 9
 #define DOWN_BUTTON_PIN 12
 
-Dungeon d;
-Player& p = d.getPlayer();
+Dungeon* d;
+Player* p;
 Controler c(LEFT_BUTTON_PIN, RIGHT_BUTTON_PIN, UP_BUTTON_PIN, DOWN_BUTTON_PIN);
 ScreenBuffer b;
 
@@ -29,7 +29,8 @@ void setup() {
   lc.setIntensity(0, 10);
   lc.clearDisplay(0);
 
-  d.loadDungeon(dungeon1);
+  d = new Dungeon(dungeon1);
+  p = d->getPlayer();
 }
 
 int currentScreenNumber = 0;
@@ -37,52 +38,42 @@ void loop() {
   c.readButtons();
 
 
-//
+
 //  Serial.print("Absolute : ");
-//  Serial.print(p.getRowAbsolute());
+//  Serial.print(p->getRowAbsolute());
 //  Serial.print(" ");
-//  Serial.println(p.getColumnAbsolute());
+//  Serial.println(p->getColumnAbsolute());
 //  Serial.print("Relative : ");
-//  Serial.print(p.getRowRelative());
+//  Serial.print(p->getRowRelative());
 //  Serial.print(" ");
-//  Serial.println(p.getColumnRelative());
+//  Serial.println(p->getColumnRelative());
 //  Serial.println("...........................");
 
 //  if (c.getLeftState() == Controler::BUTTON_PRESSED) {
-//    p.moveLeft();
+//    p->moveLeft();
 //  } else if (c.getRightState() == Controler::BUTTON_PRESSED) {
-//    p.moveRight();
+//    p->moveRight();
 //  } else if (c.getUpState() == Controler::BUTTON_PRESSED) {
-//    p.moveUp();
+//    p->moveUp();
 //  } else if (c.getDownState() == Controler::BUTTON_PRESSED) {
-//    p.moveDown();
+//    p->moveDown();
 //  }
   getRoom();
   displayPlayer();
   b.drawBuffer(lc, 0);
 
-
   delay(250);
 }
 
 void getRoom() {
-//  int roomNumber = d.getPlayerRoomNumber();
-//  byte rawRoom[8];
-//  memcpy(rawRoom, dungeon1.dungeonMap + roomNumber * 8, 8);
-
-  byte rawRoom[8]; 
-  d.getRoom(0).getRoomByteArray(rawRoom);
-  for (int i = 0; i < 8; i++) {
-    Serial.println(rawRoom[i]);
-  }
-  Serial.println(".................................");
-  
-  b.loadBuffer(rawRoom);
+  byte roomByteArray[8];
+  d->getRoom(0).getRoomByteArray(roomByteArray);
+  b.loadBuffer(roomByteArray);
 }
 
 void displayPlayer() {
-  int playerRow = p.getRowRelative();
-  int playerColumn = p.getColumnRelative();
+  int playerRow = p->getRowRelative();
+  int playerColumn = p->getColumnRelative();
   b.writeToBuffer(playerRow, playerColumn, 1);
 }
 

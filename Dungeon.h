@@ -13,7 +13,7 @@ class Dungeon {
     int dungeonHeight; // in number of rooms
   
     Room* dungeonRooms;
-    Player avatar;
+    Player* avatar;
 
     int computeDungeonMapSize(); // in bytes
     void loadRooms(const byte* dungeonMap);
@@ -26,7 +26,7 @@ class Dungeon {
     void loadDungeon(const Level& dungeon);
 
     // gets player instance
-    Player& getPlayer();
+    Player* getPlayer();
 
     // returns the number of the room the player's currently in
     int getPlayerRoomNumber();

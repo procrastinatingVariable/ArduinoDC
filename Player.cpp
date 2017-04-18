@@ -13,11 +13,18 @@ Player::Player (int row, int column) {
 
 
 void Player::setRowAbsolute (int row) {
-  this->row = row ? row >= 0 : 0;
+
+  this->row = 0;
+  if (row >= 0) {
+    this->row = row;
+  }
 }
 
 void Player::setColumnAbsolute (int column) {
-  this->column = column ? column >= 0 : 0;
+  this->column = 0;
+  if (column >= 0) {
+    this->column = column;
+  }
 }
 
 

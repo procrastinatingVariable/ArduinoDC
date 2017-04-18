@@ -26,7 +26,7 @@ Dungeon::Dungeon() {
   // singleton class
   if (dungeonInstances == 1) return;
 
-  this->avatar = Player();
+  this->avatar = new Player();
   this->dungeonRooms = 0;
 
   dungeonInstances = 1;
@@ -47,18 +47,18 @@ void Dungeon::loadDungeon (const Level& dungeon) {
   loadRooms(dungeon.dungeonMap);
 
   // initialize player position
-  int playerStartingRow = 1;
-  int playerStartingColumn = 1;
+  int playerStartingRow = 2;
+  int playerStartingColumn = 2;
   placePlayer(dungeon.startRoom, playerStartingRow, playerStartingColumn);
 }
 
-Player& Dungeon::getPlayer() {
+Player* Dungeon::getPlayer() {
   return avatar;
 }
 
 int Dungeon::getPlayerRoomNumber() {
-  int roomGridRowIndex = floor(avatar.getRowAbsolute() / 8);
-  int roomGridColumnIndex = floor(avatar.getColumnAbsolute() / 8);
+  int roomGridRowIndex = floor(avatar->getRowAbsolute() / 8);
+  int roomGridColumnIndex = floor(avatar->getColumnAbsolute() / 8);
 
   return roomGridRowIndex * dungeonWidth + roomGridColumnIndex;
   
@@ -104,8 +104,8 @@ bool Dungeon::placePlayer (int roomRowIndex, int roomColIndex, int playerRow, in
   int playerAbsoluteRow = roomRowIndex * roomHeight + playerRow;
   int playerAbsoluteCol = roomColIndex * roomWidth + playerCol;
 
-  avatar.setRowAbsolute(playerAbsoluteRow);
-  avatar.setColumnAbsolute(playerAbsoluteCol);
+  avatar->setRowAbsolute(playerAbsoluteRow);
+  avatar->setColumnAbsolute(playerAbsoluteCol);
 
   return 1;
 }
@@ -114,6 +114,7 @@ bool Dungeon::placePlayer (int roomRowIndex, int roomColIndex, int playerRow, in
 
 Dungeon::~Dungeon() {
   delete dungeonRooms;
+  delete avatar;
   dungeonInstances = 0;
 }
 
