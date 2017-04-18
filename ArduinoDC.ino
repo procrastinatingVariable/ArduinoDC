@@ -39,25 +39,25 @@ void loop() {
 
 
 
-//  Serial.print("Absolute : ");
-//  Serial.print(p->getRowAbsolute());
-//  Serial.print(" ");
-//  Serial.println(p->getColumnAbsolute());
-//  Serial.print("Relative : ");
-//  Serial.print(p->getRowRelative());
-//  Serial.print(" ");
-//  Serial.println(p->getColumnRelative());
-//  Serial.println("...........................");
+  Serial.print("Absolute : ");
+  Serial.print(p->getRowAbsolute());
+  Serial.print(" ");
+  Serial.println(p->getColumnAbsolute());
+  Serial.print("Relative : ");
+  Serial.print(p->getRowRelative());
+  Serial.print(" ");
+  Serial.println(p->getColumnRelative());
+  Serial.println("...........................");
 
-//  if (c.getLeftState() == Controler::BUTTON_PRESSED) {
-//    p->moveLeft();
-//  } else if (c.getRightState() == Controler::BUTTON_PRESSED) {
-//    p->moveRight();
-//  } else if (c.getUpState() == Controler::BUTTON_PRESSED) {
-//    p->moveUp();
-//  } else if (c.getDownState() == Controler::BUTTON_PRESSED) {
-//    p->moveDown();
-//  }
+  if (c.getLeftState() == Controler::BUTTON_PRESSED) {
+    p->moveLeft();
+  } else if (c.getRightState() == Controler::BUTTON_PRESSED) {
+    p->moveRight();
+  } else if (c.getUpState() == Controler::BUTTON_PRESSED) {
+    p->moveUp();
+  } else if (c.getDownState() == Controler::BUTTON_PRESSED) {
+    p->moveDown();
+  }
   getRoom();
   displayPlayer();
   b.drawBuffer(lc, 0);
@@ -67,7 +67,8 @@ void loop() {
 
 void getRoom() {
   byte roomByteArray[8];
-  d->getRoom(0).getRoomByteArray(roomByteArray);
+  int roomNumber = d->getPlayerRoomNumber();
+  d->getRoom(roomNumber).getRoomByteArray(roomByteArray);
   b.loadBuffer(roomByteArray);
 }
 
