@@ -15,14 +15,15 @@ class Dungeon {
     Room* dungeonRooms;
     Player avatar;
 
-    int computeDungeonMapSize(Level& dungeon); // in bytes
-    void loadRooms(byte* dungeonMap, int mapSize);
+    int computeDungeonMapSize(); // in bytes
+    void loadRooms(const byte* dungeonMap);
 
   public:
-    Dungeon(Level& startMap);
+    Dungeon();
+    Dungeon(const Level& startMap);
 
     // loads the rooms and places the player in the starting position
-    void loadDungeon(Level& dungeon);
+    void loadDungeon(const Level& dungeon);
 
     // gets player instance
     Player& getPlayer();
@@ -30,11 +31,18 @@ class Dungeon {
     // returns the number of the room the player's currently in
     int getPlayerRoomNumber();
 
+    // returns the number of rooms
+    int getRoomNumber();
+
     // returns a reference to the room with the given number
     Room& getRoom(int number);
+    // same as above but give grid index values
+    Room& getRoom(int row, int column);
     
     // places the player in the given room at the given coordinates
-    void placePlayer(int roomNumber, int row, int column);
+    bool placePlayer(int roomNumber, int playerRow, int playerCol);
+    // same as above but give grid index values for the room
+    bool placePlayer(int roomRowIndex, int roomColIndex, int playerRow, int playerCol);
     
 
     // destructor

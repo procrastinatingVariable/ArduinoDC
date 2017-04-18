@@ -8,16 +8,23 @@ class Room {
     bool roomMap[8][8];
 
     void byteToBoolArray(bool dest[8], byte source);
+    byte boolArrayToByte(bool source[8]);
 
   public:
-    Room(byte source[8]);
-    Room(bool source[8][8]);
+    Room() = default;
+    Room(const byte source[8]);
+    Room(const bool source[8][8]);
 
-    void loadRoom(byte source[8]);
-    void loadRoom(bool source[8][8]);
+    void loadRoom(const byte source[8]);
+    void loadRoom(const bool source[8][8]);
+    
+    void getRoomByteArray(byte dest[8]);
 
     // checks if specified position is free to move to
     bool checkIfFree(int row, int column);
+
+    // for debugging
+    void printRoomMap();
   
 };
 

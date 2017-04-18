@@ -20,6 +20,7 @@ void Player::setColumnAbsolute (int column) {
   this->column = column ? column >= 0 : 0;
 }
 
+
 void Player::setRowRelative (int row) {
   if (row >= 0 && row <= 7) {
     int newRowOffset = row - getRowRelative();
