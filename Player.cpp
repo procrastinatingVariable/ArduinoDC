@@ -1,32 +1,23 @@
 #include "Player.h"
 
 
-Player::Player(int playerMaxRow, int playerMaxColumn) {
-  this->playerMaxRow = playerMaxRow;
-  this->playerMaxColumn = playerMaxColumn;
-  this->row = 1;
-  this->column = 1;
+Player::Player () {
+  setRowAbsolute(0);
+  setColumnAbsolute(0);
 }
 
-Player::Player(int row, int playerMaxRow, 
-               int column, int playerMaxColumn) {
-  this->row = row;
-  this->playerMaxRow = playerMaxRow;
-  this->column = column;
-  this->playerMaxColumn = playerMaxColumn;
+Player::Player (int row, int column) {
+  setRowAbsolute(row);
+  setColumnAbsolute(column);
 }
 
 
 void Player::setRowAbsolute (int row) {
-  if (row >= 0 && row <= playerMaxRow) {
-    this->row = row;
-  }
+  this->row = row ? row >= 0 : 0;
 }
 
 void Player::setColumnAbsolute (int column) {
-  if (column >= 0 && column <= playerMaxColumn) {
-    this->column = column;
-  }
+  this->column = column ? column >= 0 : 0;
 }
 
 void Player::setRowRelative (int row) {
@@ -63,7 +54,6 @@ int Player::getColumnRelative() {
 
 
 
-
 bool Player::moveUp() {
 	int newRow = row - 1;
   if (newRow >= 0) {
@@ -75,11 +65,8 @@ bool Player::moveUp() {
 
 bool Player::moveDown() {
 	int newRow = row + 1;
-  if (newRow <= playerMaxRow) {
-	  row = newRow;
-	  return true;
-  }
-  return false;
+  row = newRow;
+  return true;
 }
 
 bool Player::moveLeft() {
@@ -93,9 +80,6 @@ bool Player::moveLeft() {
 
 bool Player::moveRight() {
 	int newColumn = column + 1;
-  if (newColumn <= playerMaxColumn) {
-  	column = newColumn;
-  	return true;
-  }
-  return false;
+	column = newColumn;
+	return true;
 }

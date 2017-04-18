@@ -8,14 +8,10 @@ class Player{
     // absolute (dungeon) coordinates of the player
 		int row;
 		int column;
-   
-    int playerMaxRow; // usually the dimensions of the dunegon
-    int playerMaxColumn;
 
 	public:
-		Player(int playerMaxRow, int playerMaxColumn);
-    Player(int row, int playerMaxRow,
-           int column, int playerMaxColumn);
+    Player();
+    Player(int row, int column);
 
            
     // set position in dungeon
