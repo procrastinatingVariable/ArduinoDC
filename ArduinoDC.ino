@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "ScreenBuffer.h"
 #include "Room.h"
+#include "Dungeon.h"
 
 #define CLOCK_PIN 6
 #define LOAD_PIN 8
@@ -14,7 +15,7 @@
 #define UP_BUTTON_PIN 9
 #define DOWN_BUTTON_PIN 12
 
-Player p(MAP2_HEIGHT * 8 - 1, MAP2_WIDTH * 8 - 1);
+Player p(dungeon1.height * 8 - 1, dungeon1.width * 8 - 1);
 Controler c;
 ScreenBuffer b;
 
@@ -65,11 +66,11 @@ void loop() {
 void getRoom() {
   int roomRowNumber = (p.getRowAbsolute() - p.getRowRelative()) / 8;
   int roomColumnNumber = (p.getColumnAbsolute() - p.getColumnRelative()) / 8;
-  int roomNumber = roomRowNumber * MAP2_WIDTH + roomColumnNumber;
+  int roomNumber = roomRowNumber * dungeon1.width + roomColumnNumber;
   Serial.print("ROOM NUMBER : ");
   Serial.println(roomNumber);
   byte rawRoom[8];
-  memcpy(rawRoom, map2 + roomNumber * 8, 8);
+  memcpy(rawRoom, dungeon1.dungeonMap + roomNumber * 8, 8);
 
   b.loadBuffer(rawRoom);
 }
