@@ -32,9 +32,7 @@ Dungeon::Dungeon() {
   dungeonInstances = 1;
 }
 
-Dungeon::Dungeon(const Level& startMap) {
-  Dungeon();
-
+Dungeon::Dungeon(const Level& startMap) : Dungeon(){
   loadDungeon(startMap);
 }
 

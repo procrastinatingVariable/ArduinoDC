@@ -10,8 +10,7 @@ Controler::Controler() {
 
 Controler::Controler (int leftButtonPin, int rightButtonPin,
 					            int upButtonPin, int downButtonPin,
-											int actionButtonPin) {
-	Controler();
+											int actionButtonPin) : Controler(){
 
 	this->leftButtonPin = leftButtonPin;
 	this->rightButtonPin = rightButtonPin;

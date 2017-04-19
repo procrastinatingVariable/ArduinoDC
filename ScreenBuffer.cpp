@@ -63,3 +63,18 @@ void ScreenBuffer::drawBuffer (LedControl lc, int screen = 0) {
   }
 }
 
+void ScreenBuffer::printBuffer() {
+  Serial.print("\n\n");
+  for (int i = 0; i < 8; i++) {
+    byte currentRow = buffer[i];
+    for (int j = 7; j >= 0; j--) {
+      bool colValue = bitRead(currentRow, j);
+      Serial.print(colValue);
+      Serial.print(" ");
+    }
+
+    Serial.println("");
+  }
+  Serial.print("\n\n");
+}
+

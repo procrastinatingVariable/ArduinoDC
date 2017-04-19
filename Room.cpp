@@ -26,14 +26,17 @@ bool Room::isInRoom (int row, int column) {
 	return 1;
 }
 
-Room::Room (const byte source[8]) {
+Room::Room() {
+	chestRow = -1;
+	chestColumn = -1;
+}
+
+Room::Room (const byte source[8]) : Room() {
   loadRoom(source);
 }
 
-Room::Room (const bool source[8][8]) {
-  if (source != NULL) {
-    memcpy (roomMap, source, sizeof(bool) * 64);
-  }
+Room::Room (const bool source[8][8]) : Room() {
+	loadRoom(source);
 }
 
 void Room::loadRoom (const byte source[8]) {
@@ -67,14 +70,46 @@ bool Room::addChest() {
 bool Room::addChest (int tRow, int tColumn) {
 	int bRow = tRow + CHEST_HEIGHT - 1;
 	int bColumn = tColumn + CHEST_HEIGHT - 1;
+
 	if (checkIfFree(tRow, tColumn,
 									bRow, bColumn)) {
+
+		chestRow = tRow;
+		chestColumn = tColumn;
+
 		for (int i = tRow; i <= bRow; i++) {
 			for (int j = tColumn; j <= bColumn; j++) {
 				roomMap[i][j] = 1;
 			}
 		}
+
 	}
+}
+
+void Room::removeChest() {
+  if (!hasChest())
+    return;
+  
+	int bRow = chestRow + CHEST_HEIGHT - 1;
+	int bColumn = chestColumn + CHEST_WIDTH - 1;
+
+	for (int i = chestRow; i <= bRow; i++) {
+		for (int j = chestColumn; j <= bColumn; j++) {
+			roomMap[i][j] = 0;
+		}
+	}
+
+  // mark the absence of the chest
+  chestRow = -1;
+  chestColumn = -1;
+
+}
+
+bool Room::hasChest() {
+	if (chestRow == -1 || chestColumn == -1)
+    return 0;
+
+  return 1;
 }
 
 bool Room::checkIfFree (int row, int column) {

@@ -25,6 +25,9 @@ class ScreenBuffer {
 
     void clearBuffer();
     void drawBuffer(LedControl lc, int screen);
+
+    // for debugging
+    void printBuffer();
    
 };
 

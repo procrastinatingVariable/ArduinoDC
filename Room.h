@@ -10,12 +10,15 @@ class Room {
 
     bool roomMap[8][8];
 
+		int chestRow;
+		int chestColumn;
+
     void byteToBoolArray(bool dest[8], byte source);
     byte boolArrayToByte(bool source[8]);
 		bool isInRoom(int row, int column);
 
   public:
-    Room() = default;
+    Room();
     Room(const byte source[8]);
     Room(const bool source[8][8]);
 
@@ -30,6 +33,10 @@ class Room {
 		bool addChest();
 		// adds a chest at the given position if free
 		bool addChest(int row, int column);
+		// removes the chest from the room
+		void removeChest();
+		// checks if the room has a chest in it
+		bool hasChest();
 		
     // checks if specified position is free to move to
     bool checkIfFree(int row, int column);

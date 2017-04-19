@@ -57,8 +57,10 @@ void loop() {
 
   getRoom();
   displayPlayer();
+  doAction();
   b.drawBuffer(lc, 0);
 
+  
   delay(150);
 }
 
@@ -74,8 +76,20 @@ void movePlayer() {
   } else if (c.getRightState() == Controler::BUTTON_PRESSED) {
     p->move(Player::MOVE_RIGHT, currentRoom);
   } 
+}
+
+void doAction() {
+  String debugS = "Chest has been removed from room #";
+
+  
+  int currentRoomNumber = d->getPlayerRoomNumber();
+  Room& currentRoom = d->getRoom(currentRoomNumber);
   if (c.getActionState() == Controler::BUTTON_PRESSED) {
-    Serial.println("Action performed");
+    if (currentRoom.hasChest()) {
+      currentRoom.removeChest();
+      debugS += currentRoomNumber;
+      Serial.println(debugS);
+    }
   }
 }
 
