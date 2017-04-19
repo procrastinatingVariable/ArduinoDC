@@ -31,38 +31,48 @@ void setup() {
 
   d = new Dungeon(dungeon1);
   p = d->getPlayer();
+//  for (int i = 0; i < d->getRoomNumber(); i++) {
+//    Serial.print("ROOM NUMBER : ");
+//    Serial.println(i);
+//    d->getRoom(i).printRoomMap();
+//  }
 }
 
-int currentScreenNumber = 0;
 void loop() {
   c.readButtons();
 
+  movePlayer();
+
+//  Serial.print("Absolute : ");
+//  Serial.print(p->getRowAbsolute());
+//  Serial.print(" ");
+//  Serial.println(p->getColumnAbsolute());
+//  Serial.print("Relative : ");
+//  Serial.print(p->getRowRelative());
+//  Serial.print(" ");
+//  Serial.println(p->getColumnRelative());
+//  Serial.println("...........................");
 
 
-  Serial.print("Absolute : ");
-  Serial.print(p->getRowAbsolute());
-  Serial.print(" ");
-  Serial.println(p->getColumnAbsolute());
-  Serial.print("Relative : ");
-  Serial.print(p->getRowRelative());
-  Serial.print(" ");
-  Serial.println(p->getColumnRelative());
-  Serial.println("...........................");
-
-  if (c.getLeftState() == Controler::BUTTON_PRESSED) {
-    p->moveLeft();
-  } else if (c.getRightState() == Controler::BUTTON_PRESSED) {
-    p->moveRight();
-  } else if (c.getUpState() == Controler::BUTTON_PRESSED) {
-    p->moveUp();
-  } else if (c.getDownState() == Controler::BUTTON_PRESSED) {
-    p->moveDown();
-  }
   getRoom();
   displayPlayer();
   b.drawBuffer(lc, 0);
 
   delay(250);
+}
+
+void movePlayer() {
+  int currentRoomNumber = d->getPlayerRoomNumber();
+  Room& currentRoom = d->getRoom(currentRoomNumber);
+  if (c.getUpState() == Controler::BUTTON_PRESSED) {
+    p->move(Player::MOVE_UP, currentRoom);
+  } else if (c.getDownState() == Controler::BUTTON_PRESSED) {
+    p->move(Player::MOVE_DOWN, currentRoom);
+  } else if (c.getLeftState() == Controler::BUTTON_PRESSED) {
+    p->move(Player::MOVE_LEFT, currentRoom);
+  } else if (c.getRightState() == Controler::BUTTON_PRESSED) {
+    p->move(Player::MOVE_RIGHT, currentRoom);
+  }
 }
 
 void getRoom() {

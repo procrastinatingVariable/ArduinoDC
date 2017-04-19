@@ -48,6 +48,11 @@ void Room::getRoomByteArray(byte dest[8]) {
 }
 
 bool Room::checkIfFree (int row, int column) {
+  // we don't check outside the room  
+	if (row < 0 || column < 0)
+		return 1;
+	if (row > 7 || column > 7)
+		return 1;
   if (roomMap != 0)
     return !roomMap[row][column];
     
@@ -55,7 +60,6 @@ bool Room::checkIfFree (int row, int column) {
 }
 
 void Room::printRoomMap() {
-  Serial.println("ROOM MAP : \n");
   for (int i = 0; i < 8; i++) {
     for (int j = 0; j < 8; j++) {
       Serial.print(roomMap[i][j]);

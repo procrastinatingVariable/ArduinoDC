@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 
+#include "Room.h"
+
 class Player{
 	private:
     // absolute (dungeon) coordinates of the player
@@ -10,6 +12,11 @@ class Player{
 		int column;
 
 	public:
+    static const int MOVE_UP = 8;
+    static const int MOVE_DOWN = 2;
+    static const int MOVE_LEFT = 4;
+    static const int MOVE_RIGHT = 6;
+ 
     Player();
     Player(int row, int column);
 
@@ -33,10 +40,8 @@ class Player{
 		int getRowRelative();
 		int getColumnRelative();
 
-		bool moveUp();
-		bool moveDown();
-		bool moveLeft();
-		bool moveRight();
+		bool move (int direction, Room& roomContext);
+
 };
 
 #endif

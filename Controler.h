@@ -26,9 +26,9 @@ class Controler {
 
 		Controler();
 		Controler(int leftButtonPin,
-				  int rightButtonPin,
-				  int upButtonPin,
-				  int downButtonPin);
+							int rightButtonPin,
+							int upButtonPin,
+							int downButtonPin);
 
 		bool getRightState();
 		bool getLeftState();

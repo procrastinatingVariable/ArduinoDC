@@ -62,32 +62,52 @@ int Player::getColumnRelative() {
 
 
 
-bool Player::moveUp() {
-	int newRow = row - 1;
-  if (newRow >= 0) {
-	  row = newRow;
-	  return true;
+// GOTTA FIX THIS SHIT!
+// COLLISION SYSTEM DOESN'T LET YOU MOVE OUT THE ROOM
+bool Player::move (int direction, Room& roomContext) {
+	
+	int row = getRowRelative();
+	int column = getColumnRelative();
+	int oldRow = row;
+	int oldColumn = column;
+
+  switch (direction) {
+    case MOVE_UP : 
+      row--;
+      break;
+
+    case MOVE_DOWN : 
+      row++;
+      break;
+
+    case MOVE_LEFT : 
+      column--;
+      break;
+
+    case MOVE_RIGHT : 
+      column++;
+      break;
+
+    default :
+      return 0;
+      
   }
-  return false;
+
+	if (!roomContext.checkIfFree(row, column)) {
+		row = oldRow;
+		column = oldColumn;
+		return 0;
+	}
+
+	int rowOffset = row - oldRow;
+	int columnOffset = column - oldColumn;
+	int newRowAbsolute = getRowAbsolute() + rowOffset;
+	int newColumnAbsolute = getColumnAbsolute() + columnOffset;
+	setRowAbsolute(newRowAbsolute);
+	setColumnAbsolute(newColumnAbsolute);
+
+	
+  return 1;
 }
 
-bool Player::moveDown() {
-	int newRow = row + 1;
-  row = newRow;
-  return true;
-}
 
-bool Player::moveLeft() {
-	int newColumn = column - 1;
-  if (newColumn >= 0) {
-  	column = newColumn;
-  	return true;
-  }
-  return false;
-}
-
-bool Player::moveRight() {
-	int newColumn = column + 1;
-	column = newColumn;
-	return true;
-}
