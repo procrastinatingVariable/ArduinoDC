@@ -31,11 +31,11 @@ void setup() {
 
   d = new Dungeon(dungeon1);
   p = d->getPlayer();
-//  for (int i = 0; i < d->getRoomNumber(); i++) {
-//    Serial.print("ROOM NUMBER : ");
-//    Serial.println(i);
-//    d->getRoom(i).printRoomMap();
-//  }
+
+
+  for (int i = 0; i < d->getRoomNumber(); i+=2) {
+    d->getRoom(i).addChest();
+  }
 }
 
 void loop() {
