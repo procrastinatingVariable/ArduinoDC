@@ -30,13 +30,15 @@ void setup() {
   lc.setIntensity(0, 10);
   lc.clearDisplay(0);
 
-  d = new Dungeon(dungeon1);
+  d = new Dungeon(dungeon2);
   p = d->getPlayer();
 
 
   for (int i = 0; i < d->getRoomNumber(); i+=2) {
     d->getRoom(i).addChest();
   }
+
+  Serial.print(sizeof(dungeon1));
 }
 
 void loop() {
@@ -44,15 +46,6 @@ void loop() {
 
   movePlayer();
 
-//  Serial.print("Absolute : ");
-//  Serial.print(p->getRowAbsolute());
-//  Serial.print(" ");
-//  Serial.println(p->getColumnAbsolute());
-//  Serial.print("Relative : ");
-//  Serial.print(p->getRowRelative());
-//  Serial.print(" ");
-//  Serial.println(p->getColumnRelative());
-//  Serial.println("...........................");
 
 
   getRoom();

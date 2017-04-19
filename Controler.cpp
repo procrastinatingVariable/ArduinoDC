@@ -53,7 +53,7 @@ void Controler::readButtons() {
 		bool downReadValue = readButtonState(downButtonPin);
 		bool actionReadValue = readButtonState(actionButtonPin);
 
-		delay(15);
+		delay(25);
 		
 		if (validate(leftReadValue, leftButtonPin)) {
 			leftButton = leftReadValue;
