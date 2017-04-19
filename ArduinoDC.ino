@@ -6,18 +6,19 @@
 #include "Room.h"
 #include "Dungeon.h"
 
-#define CLOCK_PIN 6
+#define CLOCK_PIN 9
 #define LOAD_PIN 8
-#define DATA_IN_PIN 7
+#define DATA_IN_PIN 10
 
-#define LEFT_BUTTON_PIN 11
-#define RIGHT_BUTTON_PIN 10
-#define UP_BUTTON_PIN 9
-#define DOWN_BUTTON_PIN 12
+#define LEFT_BUTTON_PIN 6
+#define RIGHT_BUTTON_PIN 7
+#define UP_BUTTON_PIN 4
+#define DOWN_BUTTON_PIN 5
+#define ACTION_BUTTON_PIN 3
 
 Dungeon* d;
 Player* p;
-Controler c(LEFT_BUTTON_PIN, RIGHT_BUTTON_PIN, UP_BUTTON_PIN, DOWN_BUTTON_PIN);
+Controler c(LEFT_BUTTON_PIN, RIGHT_BUTTON_PIN, UP_BUTTON_PIN, DOWN_BUTTON_PIN, ACTION_BUTTON_PIN);
 ScreenBuffer b;
 
 LedControl lc = LedControl(DATA_IN_PIN, CLOCK_PIN, LOAD_PIN, 1);
@@ -58,7 +59,7 @@ void loop() {
   displayPlayer();
   b.drawBuffer(lc, 0);
 
-  delay(250);
+  delay(150);
 }
 
 void movePlayer() {
@@ -72,6 +73,9 @@ void movePlayer() {
     p->move(Player::MOVE_LEFT, currentRoom);
   } else if (c.getRightState() == Controler::BUTTON_PRESSED) {
     p->move(Player::MOVE_RIGHT, currentRoom);
+  } 
+  if (c.getActionState() == Controler::BUTTON_PRESSED) {
+    Serial.println("Action performed");
   }
 }
 
