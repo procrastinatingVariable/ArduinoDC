@@ -15,8 +15,6 @@ void Dungeon::loadRooms(const byte* dungeonMap) {
   }
   
   dungeonRooms = new Room*[numberOfRooms];
-  Serial.print("Pointer after creation : ");
-  Serial.println((int)dungeonRooms, HEX);
   for (int i = 0; i < numberOfRooms; i++) {
     int roomOffset = i * 8;
     const byte* roomStartPointer = dungeonMap + roomOffset;

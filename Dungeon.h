@@ -1,7 +1,7 @@
 #ifndef DUNGEON_INCLUDED
 #define DUNGEON_INCLUDED
 
-#include "map.h" // this will be renamed
+#include "Level.h"
 #include "Room.h"
 #include "Player.h"
 

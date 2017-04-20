@@ -1,6 +1,8 @@
 #ifndef ROOM_INCLUDED
 #define ROOM_INCLUDED
 
+#define LOAD_FLASH
+
 #include <Arduino.h>
 
 class Room {
@@ -24,8 +26,10 @@ class Room {
     Room(const byte source[8]);
     Room(const bool source[8][8]);
 
+    // if LOAD_FLASH is defined, the rooms will be loaded with arrays from FLASH
     void loadRoom(const byte source[8]);
     void loadRoom(const bool source[8][8]);
+
     
 		// get the room representation as a byte array
 		// useful for loading the room into the screen buffer

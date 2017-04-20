@@ -1,11 +1,10 @@
-#include <MemoryFree.h>
-#include <LedControl.h>
-
-
-#include "map.h"
 #include "Controler.h"
 #include "ScreenBuffer.h"
 #include "Dungeon.h"
+
+#include <MemoryFree.h>
+#include <LedControl.h>
+
 
 #define CLOCK_PIN 9
 #define LOAD_PIN 8
@@ -41,10 +40,12 @@ void setup() {
 
   Serial.println(2048 - freeMemory());
 
+  d->loadDungeon(dungeon2);
 
   Serial.println(2048 - freeMemory());
   
   p = d->getPlayer();
+
 }
 
 

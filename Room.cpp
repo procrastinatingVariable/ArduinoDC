@@ -1,3 +1,5 @@
+#include <avr/pgmspace.h>
+
 #include "Room.h"
 
 const int Room::CHEST_WIDTH = 2;
@@ -42,7 +44,7 @@ Room::Room (const bool source[8][8]) : Room() {
 	loadRoom(source);
 }
 
-
+#ifndef LOAD_FLASH
 
 void Room::loadRoom (const byte source[8]) {
   if (source != NULL) {
@@ -57,6 +59,28 @@ void Room::loadRoom (const bool source[8][8]) {
     memcpy (roomMap, source, sizeof(bool) * 64);
   }
 }
+
+#else
+
+void Room::loadRoom (const byte source[8]) {
+  if (source != NULL) {
+    // bring the array to RAM
+    byte cpy[8];
+    memcpy_P (cpy, source, sizeof(byte) * 8);
+    
+    for (int i = 0; i < 8; i++) {
+      byteToBoolArray(roomMap[i], cpy[i]);
+    }
+  }
+}
+
+void Room::loadRoom (const bool source[8][8]) {
+  if (source != NULL) {
+    memcpy_P (roomMap, source, sizeof(bool) * 64);
+  }
+}
+
+#endif
 
 void Room::getRoomByteArray(byte dest[8]) {
   for (int i = 0; i < 8; i++) {
