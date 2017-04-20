@@ -13,6 +13,8 @@ class Room {
 		int chestRow;
 		int chestColumn;
 
+    bool gatePresent;
+
     void byteToBoolArray(bool dest[8], byte source);
     byte boolArrayToByte(bool source[8]);
 		bool isInRoom(int row, int column);
@@ -37,6 +39,13 @@ class Room {
 		void removeChest();
 		// checks if the room has a chest in it
 		bool hasChest();
+    // checks if the point is near the chest
+    bool isNearChest(int row, int column);
+
+		// adds a "gateway" to the next level
+		bool addGateway();
+    // checks if the point is inside the gate
+    bool isInGate(int row, int column);
 		
     // checks if specified position is free to move to
     bool checkIfFree(int row, int column);
@@ -46,6 +55,7 @@ class Room {
 
     // for debugging
     void printRoomMap();
+
   
 };
 

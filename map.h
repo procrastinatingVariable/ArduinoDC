@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#define MAX_MAP_SIZE 576 // in bytes, corresponds to a 36 rooms
+#define MAX_MAP_SIZE 200 // in bytes, corresponds to a 25 rooms
 
 struct Level {
   int width;

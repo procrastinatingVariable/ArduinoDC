@@ -1,9 +1,10 @@
-#include "map.h"
+#include <MemoryFree.h>
 #include <LedControl.h>
+
+
+#include "map.h"
 #include "Controler.h"
-#include "Player.h"
 #include "ScreenBuffer.h"
-#include "Room.h"
 #include "Dungeon.h"
 
 #define CLOCK_PIN 9
@@ -16,12 +17,16 @@
 #define DOWN_BUTTON_PIN 5
 #define ACTION_BUTTON_PIN 3
 
+
+
+LedControl lc = LedControl(DATA_IN_PIN, CLOCK_PIN, LOAD_PIN, 1);
+
 Dungeon* d;
 Player* p;
 Controler c(LEFT_BUTTON_PIN, RIGHT_BUTTON_PIN, UP_BUTTON_PIN, DOWN_BUTTON_PIN, ACTION_BUTTON_PIN);
 ScreenBuffer b;
 
-LedControl lc = LedControl(DATA_IN_PIN, CLOCK_PIN, LOAD_PIN, 1);
+
 
 void setup() {
   Serial.begin(9600);
@@ -30,30 +35,30 @@ void setup() {
   lc.setIntensity(0, 10);
   lc.clearDisplay(0);
 
-  d = new Dungeon(dungeon2);
+  Serial.println(2048 - freeMemory());
+
+  d = new Dungeon(dungeon1);
+
+  Serial.println(2048 - freeMemory());
+
+
+  Serial.println(2048 - freeMemory());
+  
   p = d->getPlayer();
-
-
-  for (int i = 0; i < d->getRoomNumber(); i+=2) {
-    d->getRoom(i).addChest();
-  }
-
-  Serial.print(sizeof(dungeon1));
 }
+
 
 void loop() {
   c.readButtons();
 
   movePlayer();
 
-
-
-  getRoom();
+  drawRoom();
   displayPlayer();
   doAction();
-  b.drawBuffer(lc, 0);
 
   
+  b.drawBuffer(lc, 0);
   delay(150);
 }
 
@@ -74,19 +79,27 @@ void movePlayer() {
 void doAction() {
   String debugS = "Chest has been removed from room #";
 
-  
   int currentRoomNumber = d->getPlayerRoomNumber();
   Room& currentRoom = d->getRoom(currentRoomNumber);
+
+  int pRow = p->getRowRelative();
+  int pCol = p->getColumnRelative();
   if (c.getActionState() == Controler::BUTTON_PRESSED) {
     if (currentRoom.hasChest()) {
-      currentRoom.removeChest();
-      debugS += currentRoomNumber;
-      Serial.println(debugS);
+      if (currentRoom.isNearChest(pRow, pCol)) {
+        currentRoom.removeChest();
+        debugS += currentRoomNumber;
+        Serial.println(debugS);
+      }
+    }
+
+    if (currentRoom.isInGate (pRow, pCol)) {
+      Serial.println("Player is in the gate!");
     }
   }
 }
 
-void getRoom() {
+void drawRoom() {
   byte roomByteArray[8];
   int roomNumber = d->getPlayerRoomNumber();
   d->getRoom(roomNumber).getRoomByteArray(roomByteArray);

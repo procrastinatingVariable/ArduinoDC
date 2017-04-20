@@ -11,14 +11,16 @@ void Dungeon::loadRooms(const byte* dungeonMap) {
 
   // clear out the currently loaded map
   if (dungeonRooms != 0) {
-    delete dungeonRooms;
+    freeRoomMemory();
   }
   
-  dungeonRooms = new Room[numberOfRooms];
+  dungeonRooms = new Room*[numberOfRooms];
+  Serial.print("Pointer after creation : ");
+  Serial.println((int)dungeonRooms, HEX);
   for (int i = 0; i < numberOfRooms; i++) {
     int roomOffset = i * 8;
     const byte* roomStartPointer = dungeonMap + roomOffset;
-    dungeonRooms[i] = Room(roomStartPointer);
+    dungeonRooms[i] = new Room(roomStartPointer);
   }
 }
 
@@ -69,7 +71,7 @@ int Dungeon::getRoomNumber() {
 Room& Dungeon::getRoom (int number) {
   int numberOfRooms = getRoomNumber();
   if (number >= 0 && number < numberOfRooms) {
-    return dungeonRooms[number];
+    return *dungeonRooms[number];
   }
 }
 
@@ -109,9 +111,20 @@ bool Dungeon::placePlayer (int roomRowIndex, int roomColIndex, int playerRow, in
 }
 
 
+void Dungeon::freeRoomMemory() {
+  for (int i = 0; i < getRoomNumber(); i++) {
+    delete dungeonRooms[i];
+  }
+  delete[] dungeonRooms;
+}
+
+
 
 Dungeon::~Dungeon() {
-  delete dungeonRooms;
+  for (int i = 0;i < getRoomNumber(); i++) {
+    delete dungeonRooms[i];
+  }
+  delete[] dungeonRooms;
   delete avatar;
   dungeonInstances = 0;
 }

@@ -26,9 +26,12 @@ bool Room::isInRoom (int row, int column) {
 	return 1;
 }
 
+
+
 Room::Room() {
 	chestRow = -1;
 	chestColumn = -1;
+  gatePresent = 0;
 }
 
 Room::Room (const byte source[8]) : Room() {
@@ -38,6 +41,8 @@ Room::Room (const byte source[8]) : Room() {
 Room::Room (const bool source[8][8]) : Room() {
 	loadRoom(source);
 }
+
+
 
 void Room::loadRoom (const byte source[8]) {
   if (source != NULL) {
@@ -58,6 +63,8 @@ void Room::getRoomByteArray(byte dest[8]) {
     dest[i] = boolArrayToByte(roomMap[i]);
   }
 }
+
+
 
 bool Room::addChest() {
 	// a chest is a 2x2 block
@@ -112,6 +119,49 @@ bool Room::hasChest() {
   return 1;
 }
 
+bool Room::isNearChest (int row, int column) {
+  if (!hasChest()) return 0;
+
+  int chestAreaTopRow = chestRow - 1;
+  int chestAreaTopCol = chestColumn - 1;
+  int chestAreaBotRow = chestAreaTopRow + CHEST_HEIGHT + 1;
+  int chestAreaBotCol = chestAreaTopCol + CHEST_WIDTH + 1;
+
+  return (row >= chestAreaTopRow && row <= chestAreaBotRow &&
+          column >= chestAreaTopCol && column <= chestAreaBotCol) ;
+}
+
+
+
+bool Room::addGateway() {
+	int gateWidth = 4;
+	int gateHeight = 3;
+	int gateTopRow = 2;
+	int gateTopCol = 2;
+	int gateBotRow = gateTopRow + gateHeight - 1;
+	int gateBotCol = gateTopCol + gateWidth - 1;
+	
+	if (checkIfFree(gateTopRow, gateTopCol, gateBotRow, gateBotCol)) {
+		for (int i = gateTopRow; i <= gateBotRow; i++) {
+			roomMap[i][gateTopCol] = 1;
+			roomMap[i][gateBotCol] = 1;
+		}
+		for (int i = gateTopCol; i <= gateBotCol; i++) {
+			roomMap[gateTopRow][i] = 1;
+		}
+
+    gatePresent = 1;
+	}
+}
+
+bool Room::isInGate (int row, int column) {
+  if (!gatePresent) return 0;
+  // the gate's interior is a fixed 2x2 square
+  return (row >= 3 && row <= 4) && (column >= 3 && column <= 4);
+}
+
+
+
 bool Room::checkIfFree (int row, int column) {
   // we don't check outside the room  
 	if (!isInRoom(row, column))
@@ -137,6 +187,8 @@ bool Room::checkIfFree(int tRow, int tColumn,
 
 	return !sum;
 }
+
+
 
 void Room::printRoomMap() {
   for (int i = 0; i < 8; i++) {
