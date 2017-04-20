@@ -34,15 +34,20 @@ void setup() {
   lc.setIntensity(0, 10);
   lc.clearDisplay(0);
 
-  Serial.println(2048 - freeMemory());
+  int beforeDungeon = 2048 - freeMemory();
 
   d = new Dungeon(dungeon1);
 
-  Serial.println(2048 - freeMemory());
+  int afterDungeon = 2048 - freeMemory();
+  Serial.print("dungeon 1 eats : ");
+  Serial.println(afterDungeon - beforeDungeon);
+
 
   d->loadDungeon(dungeon2);
-
-  Serial.println(2048 - freeMemory());
+  
+  afterDungeon = 2048 - freeMemory();
+  Serial.print("dungeon 2 eats : ");
+  Serial.println(afterDungeon - beforeDungeon);
   
   p = d->getPlayer();
 

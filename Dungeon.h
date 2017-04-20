@@ -17,6 +17,8 @@ class Dungeon {
 
     int computeDungeonMapSize(); // in bytes
     void loadRooms(const byte* dungeonMap);
+    void freeRoomMemory();
+
 
   public:
     Dungeon();
@@ -44,9 +46,6 @@ class Dungeon {
     // same as above but give grid index values for the room
     bool placePlayer(int roomRowIndex, int roomColIndex, int playerRow, int playerCol);
 
-
-    // for debugging
-    void freeRoomMemory();
 
     // destructor
     ~Dungeon();

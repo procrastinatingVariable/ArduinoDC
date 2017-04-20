@@ -1,3 +1,4 @@
+#include <MemoryFree.h>
 #include "Dungeon.h"
 
 int Dungeon::dungeonInstances = 0;
@@ -9,17 +10,13 @@ int Dungeon::computeDungeonMapSize() {
 void Dungeon::loadRooms(const byte* dungeonMap) {
   int numberOfRooms = getRoomNumber();
 
-  // clear out the currently loaded map
-  if (dungeonRooms != 0) {
-    freeRoomMemory();
-  }
-  
   dungeonRooms = new Room*[numberOfRooms];
   for (int i = 0; i < numberOfRooms; i++) {
     int roomOffset = i * 8;
     const byte* roomStartPointer = dungeonMap + roomOffset;
     dungeonRooms[i] = new Room(roomStartPointer);
   }
+  
 }
 
 Dungeon::Dungeon() {
@@ -38,6 +35,9 @@ Dungeon::Dungeon(const Level& startMap) : Dungeon(){
 
 
 void Dungeon::loadDungeon (const Level& dungeon) {
+  // free the space used up by the previous map
+  freeRoomMemory();
+  
   // load the rooms
   dungeonWidth = dungeon.width;
   dungeonHeight = dungeon.height;
@@ -110,19 +110,19 @@ bool Dungeon::placePlayer (int roomRowIndex, int roomColIndex, int playerRow, in
 
 
 void Dungeon::freeRoomMemory() {
-  for (int i = 0; i < getRoomNumber(); i++) {
-    delete dungeonRooms[i];
+  if (dungeonRooms != 0) {
+    int numberOfRooms = getRoomNumber();
+    for (int i = 0; i < numberOfRooms; i++) {
+      delete dungeonRooms[i];
+    }
+    delete[] dungeonRooms;
   }
-  delete[] dungeonRooms;
 }
 
 
 
 Dungeon::~Dungeon() {
-  for (int i = 0;i < getRoomNumber(); i++) {
-    delete dungeonRooms[i];
-  }
-  delete[] dungeonRooms;
+  freeRoomMemory();
   delete avatar;
   dungeonInstances = 0;
 }
