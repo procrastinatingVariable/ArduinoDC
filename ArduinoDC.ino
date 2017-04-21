@@ -34,22 +34,16 @@ void setup() {
   lc.setIntensity(0, 10);
   lc.clearDisplay(0);
 
-  int beforeDungeon = 2048 - freeMemory();
+  d = new Dungeon(dungeon2);
 
-  d = new Dungeon(dungeon1);
-
-  int afterDungeon = 2048 - freeMemory();
-  Serial.print("dungeon 1 eats : ");
-  Serial.println(afterDungeon - beforeDungeon);
-
-
-  d->loadDungeon(dungeon2);
-  
-  afterDungeon = 2048 - freeMemory();
-  Serial.print("dungeon 2 eats : ");
-  Serial.println(afterDungeon - beforeDungeon);
-  
   p = d->getPlayer();
+
+  for (int i = 0; i < d->getRoomNumber(); i+=2) {
+    d->getRoom(i).addChest();
+  }
+
+
+  Serial.println(2048 - freeMemory());
 
 }
 
@@ -106,9 +100,9 @@ void doAction() {
 }
 
 void drawRoom() {
-  byte roomByteArray[8];
+  byte* roomByteArray;
   int roomNumber = d->getPlayerRoomNumber();
-  d->getRoom(roomNumber).getRoomByteArray(roomByteArray);
+  roomByteArray = d->getRoom(roomNumber).getRoomByteArray();
   b.loadBuffer(roomByteArray);
 }
 

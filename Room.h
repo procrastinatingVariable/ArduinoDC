@@ -10,16 +10,19 @@ class Room {
 		static const int CHEST_WIDTH;
 		static const int CHEST_HEIGHT;
 
-    bool roomMap[8][8];
+		byte roomMap[8];
 
 		int chestRow;
 		int chestColumn;
 
     bool gatePresent;
 
-    void byteToBoolArray(bool dest[8], byte source);
-    byte boolArrayToByte(bool source[8]);
-		bool isInRoom(int row, int column);
+		static void copyBoolMatrix(byte dest[8], bool source[8][8]);
+
+    static void byteToBoolArray(bool dest[8], byte source);
+    static byte boolArrayToByte(bool source[8]);
+		static bool isInRoom(int row, int column);
+
 
   public:
     Room();
@@ -33,7 +36,7 @@ class Room {
     
 		// get the room representation as a byte array
 		// useful for loading the room into the screen buffer
-    void getRoomByteArray(byte dest[8]);
+    byte* getRoomByteArray();
 
 		// adds a chest in the middle of the room if free
 		bool addChest();
@@ -59,6 +62,7 @@ class Room {
 
     // for debugging
     void printRoomMap();
+    static void debug();
 
   
 };

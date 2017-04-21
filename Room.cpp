@@ -6,26 +6,41 @@ const int Room::CHEST_WIDTH = 2;
 const int Room::CHEST_HEIGHT = 2;
 
 void Room::byteToBoolArray(bool dest[8], byte source) {
-  for (int i = 0; i < 8; i++) {
-    dest[i] = bitRead(source, 7 - i);
-  }
+	if (dest != 0 && source != 0) {
+		for (int i = 0; i < 8; i++) {
+			dest[i] = bitRead(source, 7 - i);
+		}
+	}
+
 }
 
 byte Room::boolArrayToByte (bool source[8]) {
-  byte value;
-  int targetBit;
-  for (int i = 0; i < 8; i++) {
-    targetBit = 7 - i;
-    bitWrite(value, targetBit, source[i]);
-  }
+	if (source != NULL) {
+		byte value;
+		int targetBit;
+		for (int i = 0; i < 8; i++) {
+			targetBit = 7 - i;
+			bitWrite(value, targetBit, source[i]);
+		}
 
-  return value;
+		return value;
+	}
+
 }
 
 bool Room::isInRoom (int row, int column) {
 	if (row < 0 || row > 7) return 0;
 	if (column < 0 || column > 7) return 0;
 	return 1;
+}
+
+void Room::copyBoolMatrix (byte dest[8], bool source[8][8]) {
+	if (source != NULL) {
+		for (int i = 0; i < 8; i++) {
+			dest[i] = boolArrayToByte(source[i]);
+		}
+	}
+
 }
 
 
@@ -48,44 +63,44 @@ Room::Room (const bool source[8][8]) : Room() {
 
 void Room::loadRoom (const byte source[8]) {
   if (source != NULL) {
-    for (int i = 0; i < 8; i++) {
-      byteToBoolArray(roomMap[i], source[i]);
-    }
-  }
+		memcpy (roomMap, source, sizeof(byte) * 8);
+	}
 }
 
 void Room::loadRoom (const bool source[8][8]) {
-  if (source != NULL) {
-    memcpy (roomMap, source, sizeof(bool) * 64);
-  }
+	if (source != NULL) {
+		for (int i = 0; i < 8; i++) {
+			roomMap[i] = boolArrayToByte(source[i]);
+		}
+
+	}
 }
 
 #else
 
 void Room::loadRoom (const byte source[8]) {
   if (source != NULL) {
-    // bring the array to RAM
-    byte cpy[8];
-    memcpy_P (cpy, source, sizeof(byte) * 8);
-    
-    for (int i = 0; i < 8; i++) {
-      byteToBoolArray(roomMap[i], cpy[i]);
-    }
+    memcpy_P (roomMap, source, sizeof(byte) * 8);
   }
 }
 
 void Room::loadRoom (const bool source[8][8]) {
   if (source != NULL) {
-    memcpy_P (roomMap, source, sizeof(bool) * 64);
+		// we bring the array to RAM
+		bool cpy[8][8];
+		memcpy_P (cpy, source, sizeof(bool) * 64);
+
+		for (int i = 0; i < 8; i++) {
+			roomMap[i] = boolArrayToByte(cpy[i]);
+		}
+
   }
 }
 
 #endif
 
-void Room::getRoomByteArray(byte dest[8]) {
-  for (int i = 0; i < 8; i++) {
-    dest[i] = boolArrayToByte(roomMap[i]);
-  }
+byte* Room::getRoomByteArray() {
+	return roomMap;
 }
 
 
@@ -110,23 +125,25 @@ bool Room::addChest (int tRow, int tColumn) {
 
 		for (int i = tRow; i <= bRow; i++) {
 			for (int j = tColumn; j <= bColumn; j++) {
-				roomMap[i][j] = 1;
+				bitSet(roomMap[i], 7 - j);
 			}
 		}
 
 	}
+
+  
 }
 
 void Room::removeChest() {
   if (!hasChest())
     return;
-  
+
 	int bRow = chestRow + CHEST_HEIGHT - 1;
 	int bColumn = chestColumn + CHEST_WIDTH - 1;
 
 	for (int i = chestRow; i <= bRow; i++) {
 		for (int j = chestColumn; j <= bColumn; j++) {
-			roomMap[i][j] = 0;
+      bitClear(roomMap[i], 7 - j);
 		}
 	}
 
@@ -158,25 +175,31 @@ bool Room::isNearChest (int row, int column) {
 
 
 bool Room::addGateway() {
-	int gateWidth = 4;
-	int gateHeight = 3;
-	int gateTopRow = 2;
-	int gateTopCol = 2;
-	int gateBotRow = gateTopRow + gateHeight - 1;
-	int gateBotCol = gateTopCol + gateWidth - 1;
-	
-	if (checkIfFree(gateTopRow, gateTopCol, gateBotRow, gateBotCol)) {
-		for (int i = gateTopRow; i <= gateBotRow; i++) {
-			roomMap[i][gateTopCol] = 1;
-			roomMap[i][gateBotCol] = 1;
-		}
-		for (int i = gateTopCol; i <= gateBotCol; i++) {
-			roomMap[gateTopRow][i] = 1;
-		}
+  byte gateMask[] = { B00000000,
+                    B00000000,
+                    B00111100,
+                    B00100100,
+                    B00100100,
+                    B00000000,
+                    B00000000,
+                    B00000000 };
+  int gateTRow = 2;
+  int gateTCol = 2;
+  int gateWidth = 4;
+  int gateHeight = 3;
+  int gateBRow = gateTRow + gateHeight - 1;
+  int gateBCol = gateTCol + gateWidth - 1;
+
+  if (checkIfFree(gateTRow, gateTCol, gateBRow, gateBCol)) {
+    for (int i = 0; i < 8; i++) {
+      roomMap[i] |= gateMask[i];
+    }
 
     gatePresent = 1;
-	}
+  }
+
 }
+
 
 bool Room::isInGate (int row, int column) {
   if (!gatePresent) return 0;
@@ -190,8 +213,10 @@ bool Room::checkIfFree (int row, int column) {
   // we don't check outside the room  
 	if (!isInRoom(row, column))
 		return 1;
-  if (roomMap != 0)
-    return !roomMap[row][column];
+  if (roomMap != 0) {
+    byte rowByte = roomMap[row];
+    return !bitRead(rowByte, 7 - column);
+  }
     
   return 0;
 }
@@ -202,11 +227,19 @@ bool Room::checkIfFree(int tRow, int tColumn,
 		return 0;
 	}
 
-	int sum = 0;
-	for (int i = tRow; i <= tColumn; i++) {
-		for (int j = bRow; j <= bColumn; j++) {
-			sum += roomMap[i][j];
+  
+	byte areaMask[] = {0, 0, 0, 0, 0, 0, 0, 0};
+	for (int i = tRow; i <= bRow; i++) {
+		for (int j = bColumn; j >= tColumn; j--) {
+		  bitSet(areaMask[i], 7 - j);
 		}
+
+	}
+
+	int sum = 0;
+	for (int i = tRow; i <= bRow; i++) {
+		byte rowCut = roomMap[i] & areaMask[i];
+		sum += rowCut;
 	}
 
 	return !sum;
@@ -215,13 +248,22 @@ bool Room::checkIfFree(int tRow, int tColumn,
 
 
 void Room::printRoomMap() {
-  for (int i = 0; i < 8; i++) {
-    for (int j = 0; j < 8; j++) {
-      Serial.print(roomMap[i][j]);
+  bool bitValue;
+  Serial.print("\n\n");
+  for (int i = 0;i < 8; i++) {
+    for (int j = 7; j >= 0; j--) {
+      bitValue = bitRead(roomMap[i], j);
+      Serial.print(bitValue);
       Serial.print(" ");
     }
     Serial.println("");
   }
-  Serial.print("\n\n\n");
+  Serial.print("\n\n");
 }
+
+void Room::debug() {
+ 
+  
+}
+
 
