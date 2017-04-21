@@ -4,11 +4,13 @@
 Player::Player () {
   setRowAbsolute(0);
   setColumnAbsolute(0);
+  setKeys(0);
 }
 
 Player::Player (int row, int column) {
   setRowAbsolute(row);
   setColumnAbsolute(column);
+  setKeys(0);
 }
 
 
@@ -40,6 +42,23 @@ void Player::setColumnRelative (int column) {
     int newColumnOffset = column - getColumnRelative();
     this->column += newColumnOffset;
   }
+}
+
+
+int Player::getKeys() {
+  return collectedKeys;
+}
+
+void Player::setKeys (int num) {
+  collectedKeys = num ? num >= 0 : 0;
+}
+
+void Player::addKey() {
+  collectedKeys++;
+}
+
+void Player::removeKey() {
+  collectedKeys--;
 }
 
 

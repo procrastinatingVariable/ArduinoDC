@@ -9,7 +9,9 @@ class Player{
 	private:
     // absolute (dungeon) coordinates of the player
 		int row;
-		int column;
+    int column;
+
+    int collectedKeys;
 
 	public:
     static const int MOVE_UP = 8;
@@ -30,6 +32,10 @@ class Player{
 		void setColumnRelative(int column);
 
 
+    int getKeys();
+    void setKeys(int num);
+    void addKey();
+    void removeKey();
    
 
     // get position in dungeon
