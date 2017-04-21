@@ -5,21 +5,24 @@ Controler::Controler() {
 	rightButton = BUTTON_RELEASED;
   upButton = BUTTON_RELEASED;
 	downButton = BUTTON_RELEASED;
+	actionButton = BUTTON_RELEASED;
 }
 
 Controler::Controler (int leftButtonPin, int rightButtonPin,
-					            int upButtonPin, int downButtonPin) {
-	Controler();
+					            int upButtonPin, int downButtonPin,
+											int actionButtonPin) : Controler(){
 
 	this->leftButtonPin = leftButtonPin;
 	this->rightButtonPin = rightButtonPin;
 	this->upButtonPin = upButtonPin;
 	this->downButtonPin = downButtonPin;
+	this->actionButtonPin = actionButtonPin;
 
 	pinMode(leftButtonPin, INPUT_PULLUP);
 	pinMode(rightButtonPin, INPUT_PULLUP);
 	pinMode(upButtonPin, INPUT_PULLUP);
 	pinMode(downButtonPin, INPUT_PULLUP);
+	pinMode(actionButtonPin, INPUT_PULLUP);
 }
 
 
@@ -39,13 +42,18 @@ bool Controler::getDownState() {
 	return downButton;
 }
 
+bool Controler::getActionState() {
+	return actionButton;
+}
+
 void Controler::readButtons() {
 		bool leftReadValue = readButtonState(leftButtonPin);
 		bool rightReadValue = readButtonState(rightButtonPin);
 		bool upReadValue = readButtonState(upButtonPin);
 		bool downReadValue = readButtonState(downButtonPin);
+		bool actionReadValue = readButtonState(actionButtonPin);
 
-		delay(15);
+		delay(25);
 		
 		if (validate(leftReadValue, leftButtonPin)) {
 			leftButton = leftReadValue;
@@ -61,6 +69,10 @@ void Controler::readButtons() {
 		
 		if (validate(downReadValue, downButtonPin)) {
 			downButton = downReadValue;
+		}
+
+		if (validate(actionReadValue, actionButtonPin)) {
+			actionButton = actionReadValue;
 		}
 }
 

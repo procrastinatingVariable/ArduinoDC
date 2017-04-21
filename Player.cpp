@@ -1,71 +1,132 @@
 #include "Player.h"
 
 
-Player::Player() {
-	row = 0;
-	column = 0;
+Player::Player () {
+  setRowAbsolute(0);
+  setColumnAbsolute(0);
+  setKeys(0);
 }
 
-Player::Player(int row, int column) {
-	this->row = row;
-	this->column = column;
+Player::Player (int row, int column) {
+  setRowAbsolute(row);
+  setColumnAbsolute(column);
+  setKeys(0);
 }
 
 
-void Player::setRow (int row) {
-	if (row > 0 && row < 7) {
-		this->row = row;
+void Player::setRowAbsolute (int row) {
+
+  this->row = 0;
+  if (row >= 0) {
+    this->row = row;
+  }
+}
+
+void Player::setColumnAbsolute (int column) {
+  this->column = 0;
+  if (column >= 0) {
+    this->column = column;
+  }
+}
+
+
+void Player::setRowRelative (int row) {
+  if (row >= 0 && row <= 7) {
+    int newRowOffset = row - getRowRelative();
+    this->row += newRowOffset;
+  }
+}
+
+void Player::setColumnRelative (int column) {
+  if (column >= 0 && column <= 7) {
+    int newColumnOffset = column - getColumnRelative();
+    this->column += newColumnOffset;
+  }
+}
+
+
+int Player::getKeys() {
+  return collectedKeys;
+}
+
+void Player::setKeys (int num) {
+  collectedKeys = num ? num >= 0 : 0;
+}
+
+void Player::addKey() {
+  collectedKeys++;
+}
+
+void Player::removeKey() {
+  collectedKeys--;
+}
+
+
+int Player::getRowAbsolute() {
+  return row;
+}
+
+int Player::getColumnAbsolute() {
+  return column;
+}
+
+int Player::getRowRelative() {
+  return row % 8;
+}
+
+int Player::getColumnRelative() {
+  return column % 8;
+}
+
+
+
+
+// GOTTA FIX THIS SHIT!
+// COLLISION SYSTEM DOESN'T LET YOU MOVE OUT THE ROOM
+bool Player::move (int direction, Room& roomContext) {
+	
+	int row = getRowRelative();
+	int column = getColumnRelative();
+	int oldRow = row;
+	int oldColumn = column;
+
+  switch (direction) {
+    case MOVE_UP : 
+      row--;
+      break;
+
+    case MOVE_DOWN : 
+      row++;
+      break;
+
+    case MOVE_LEFT : 
+      column--;
+      break;
+
+    case MOVE_RIGHT : 
+      column++;
+      break;
+
+    default :
+      return 0;
+      
+  }
+
+	if (!roomContext.checkIfFree(row, column)) {
+		row = oldRow;
+		column = oldColumn;
+		return 0;
 	}
-}
 
-void Player::setColumn (int column) {
-	if (column > 0 && column < 7) {
-		this->column = column;
-	}
-}
+	int rowOffset = row - oldRow;
+	int columnOffset = column - oldColumn;
+	int newRowAbsolute = getRowAbsolute() + rowOffset;
+	int newColumnAbsolute = getColumnAbsolute() + columnOffset;
+	setRowAbsolute(newRowAbsolute);
+	setColumnAbsolute(newColumnAbsolute);
 
-int Player::getRow() {
-	return row;
-}
-
-int Player::getColumn() {
-	return column;
+	
+  return 1;
 }
 
 
-
-bool Player::moveUp() {
-	int newRow = row - 1;
-	if (newRow >= 0) {
-		row = newRow;
-		return true;
-	}
-	return false;
-}
-
-bool Player::moveDown() {
-	int newRow = row + 1;
-	if (newRow <= 7) {
-		row = newRow;
-		return true;
-	}
-	return false;
-}
-
-bool Player::moveLeft() {
-	int newColumn = column - 1;
-	if (newColumn >= 0) {
-		column = newColumn;
-		return true;
-	}
-	return false;
-}
-
-bool Player::moveRight() {
-	int newColumn = column + 1;
-	if (newColumn <= 7) {
-		column = newColumn;
-		return true;
-	}
-	return false;
-}

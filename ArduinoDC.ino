@@ -1,99 +1,206 @@
-#include "map.h"
-#include <LedControl.h>
 #include "Controler.h"
-#include "Player.h"
+#include "ScreenBuffer.h"
+#include "Dungeon.h"
 
-#define CLOCK_PIN 6
+#include <MemoryFree.h>
+#include <LedControl.h>
+
+
+#define CLOCK_PIN 9
 #define LOAD_PIN 8
-#define DATA_IN_PIN 7
+#define DATA_IN_PIN 10
 
-#define LEFT_BUTTON_PIN 11
-#define RIGHT_BUTTON_PIN 10
-#define UP_BUTTON_PIN 9
-#define DOWN_BUTTON_PIN 12
+#define LEFT_BUTTON_PIN 6
+#define RIGHT_BUTTON_PIN 7
+#define UP_BUTTON_PIN 4
+#define DOWN_BUTTON_PIN 5
+#define ACTION_BUTTON_PIN 3
 
-bool currentScreen[8][8];
-Player p;
-Controler c;
+#define NUM_OF_KEYS 3
+
+
 
 LedControl lc = LedControl(DATA_IN_PIN, CLOCK_PIN, LOAD_PIN, 1);
 
-void setup() {
-  Serial.begin(9600);
-  
+Dungeon* d;
+Player* p;
+Controler c(LEFT_BUTTON_PIN, RIGHT_BUTTON_PIN, UP_BUTTON_PIN, DOWN_BUTTON_PIN, ACTION_BUTTON_PIN);
+ScreenBuffer b;
+
+int currentLevel;
+bool gatewayAdded;
+
+
+void initScreen() {
   lc.shutdown(0, false);
   lc.setIntensity(0, 10);
   lc.clearDisplay(0);
 
-  p = Player(6, 1);
-  c = Controler(LEFT_BUTTON_PIN, RIGHT_BUTTON_PIN, UP_BUTTON_PIN, DOWN_BUTTON_PIN);
 }
 
-int currentScreenNumber = 0;
+void initDungeon() {
+  currentLevel = 2;
+  d = new Dungeon();
+  loadLevel(currentLevel);
+
+  p = d->getPlayer();
+  
+}
+
+void loadLevel (int levelNum) {
+  Serial.println("************************");
+  Serial.print("Loaded level : ");
+  Serial.println(currentLevel);
+  Serial.println("************************");
+  
+  // reset the number of keys the player has
+  p->setKeys(0);
+  gatewayAdded = 0;
+  
+  switch(levelNum) {
+    case 1:
+      d->loadDungeon(dungeon1);
+      break;
+
+    case 2:
+      d->loadDungeon(dungeon2);
+      break;
+
+    default:
+      d->loadDungeon(dungeon1);
+  }
+
+  initKeys();
+}
+
+void initKeys() {
+  randomSeed(analogRead(0));
+  int playerStartingRoom = d->getPlayerRoomNumber();
+  int numOfRooms = d->getRoomNumber();
+
+  int keyLocations[3];
+  for (int i = 0; i < NUM_OF_KEYS; i++) {
+    int rRoom;
+    // generate numbers untill you found one of a room who's empty (player or chest)
+    while ((rRoom = random(0, numOfRooms)) == playerStartingRoom || 
+            d->getRoom(rRoom).hasChest()) {}
+
+    d->getRoom(rRoom).addChest();
+    Serial.print("Added a chest in room ");
+    Serial.println(rRoom);
+  }
+  
+}
+
+void placeGate() {
+  randomSeed(analogRead(0));
+  int playerCurrentRoom = d->getPlayerRoomNumber();
+  int numOfRooms = d->getRoomNumber();
+
+  int rRoom;
+  while ((rRoom = random(0, numOfRooms)) == playerCurrentRoom) {}
+
+  d->getRoom(rRoom).addGateway();
+  Serial.print("Gateway to next level added to room ");
+  Serial.println(rRoom);
+}
+
+void setup() {
+  Serial.begin(9600);
+
+  initScreen();
+  initDungeon();
+
+}
+
+
+
+
+
+
 void loop() {
-  lc.clearDisplay(0);
   c.readButtons();
 
-  Serial.print(p.getRow());
-  Serial.print(" ");
-  Serial.println(p.getColumn());
+  movePlayer();
 
-  if (c.getLeftState() == Controler::BUTTON_PRESSED) {
-    p.moveLeft();
-  } else if (c.getRightState() == Controler::BUTTON_PRESSED) {
-    p.moveRight();
-  } else if (c.getUpState() == Controler::BUTTON_PRESSED) {
-    p.moveUp();
-  } else if (c.getDownState() == Controler::BUTTON_PRESSED) {
-    p.moveDown();
-  }
-  getRoom(0);
-  displayScreen();
+  drawRoom();
   displayPlayer();
+  doAction();
 
+  if (p->getKeys() == NUM_OF_KEYS && gatewayAdded == 0) {
+    placeGate();
+    gatewayAdded = 1;
+  }
+
+  // change to next dungeon if the player found the gateway
+  int currentRoomNum = d->getPlayerRoomNumber();
+  if (gatewayAdded) {
+    Room& currentRoom = d->getRoom(currentRoomNum);
+    int playerRow = p->getRowRelative();
+    int playerCol = p->getColumnRelative();
+    if (currentRoom.isInGate(playerRow, playerCol)) {
+      currentLevel++;
+      loadLevel(currentLevel);
+    }
+  }
+
+  
+  b.drawBuffer(lc, 0);
   delay(150);
 }
 
-void getRoom(int roomNumber) {
-  byte rawRoom[8];
-  memcpy(rawRoom, map2 + roomNumber * 8, 8);
+void movePlayer() {
+  int currentRoomNumber = d->getPlayerRoomNumber();
+  Room& currentRoom = d->getRoom(currentRoomNumber);
+  if (c.getUpState() == Controler::BUTTON_PRESSED) {
+    p->move(Player::MOVE_UP, currentRoom);
+  } else if (c.getDownState() == Controler::BUTTON_PRESSED) {
+    p->move(Player::MOVE_DOWN, currentRoom);
+  } else if (c.getLeftState() == Controler::BUTTON_PRESSED) {
+    p->move(Player::MOVE_LEFT, currentRoom);
+  } else if (c.getRightState() == Controler::BUTTON_PRESSED) {
+    p->move(Player::MOVE_RIGHT, currentRoom);
+  } 
+}
 
-  for (int i = 0; i < 8; i++) {
-    byte currentRow = rawRoom[i];
-    for (int j = 0; j < 8; j++) {
-      currentScreen[i][j] = bitRead(currentRow, 7 - j);
+void doAction() {
+  String debugS = "Player has collected the key in room #";
+
+  int currentRoomNumber = d->getPlayerRoomNumber();
+  Room& currentRoom = d->getRoom(currentRoomNumber);
+
+  int pRow = p->getRowRelative();
+  int pCol = p->getColumnRelative();
+  if (c.getActionState() == Controler::BUTTON_PRESSED) {
+    if (currentRoom.hasChest()) {
+      if (currentRoom.isNearChest(pRow, pCol)) {
+        p->addKey();
+        currentRoom.removeChest();
+        
+        debugS += currentRoomNumber;
+        Serial.println(debugS);
+      }
+    }
+
+    if (currentRoom.isInGate (pRow, pCol)) {
+      Serial.println("Player is in the gate!");
     }
   }
 }
 
-byte arrayToByte(bool source[8]) {
-  byte endValue;
-  for (int i = 0; i < 8; i++) {
-    bitWrite(endValue, 7 - i, source[i]);
-  }
-  return endValue;
-}
 
-void displayScreen() {
-  byte rowValue;
-  for (int i = 0; i < 8; i++) {
-    rowValue = arrayToByte(currentScreen[i]);
-    lc.setRow(0, i, rowValue);
-  }
+
+
+void drawRoom() {
+  byte* roomByteArray;
+  int roomNumber = d->getPlayerRoomNumber();
+  roomByteArray = d->getRoom(roomNumber).getRoomByteArray();
+  b.loadBuffer(roomByteArray);
 }
 
 void displayPlayer() {
-  lc.setLed(0, p.getRow(), p.getColumn(), HIGH);
-}
-
-void printScreenDebug() {
-  for (int i = 0; i < 8; i++) {
-    for (int j = 0; j < 8; j++) {
-      Serial.print(currentScreen[i][j]);
-      Serial.print(" ");
-    }
-    Serial.println("");
-  }
-  Serial.println("------------------------------");
+  int playerRow = p->getRowRelative();
+  int playerColumn = p->getColumnRelative();
+  b.writeToBuffer(playerRow, playerColumn, 1);
 }
 
